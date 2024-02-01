@@ -1,5 +1,6 @@
 #### Creamos nuestro script de selenium
 import random
+from flask import jsonify
 import selenium                                       
 import os                                             
 import time                                           
@@ -9,7 +10,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service 
 from selenium.webdriver.chrome.options import Options 
 from selenium.webdriver.common.by import By
-from sqlalchemy import func, text
+from sqlalchemy import func, text, join
+from sqlalchemy.orm import joinedload
 
 
 # Traemos la clase para poder crear los registros y la base de datos
@@ -249,20 +251,33 @@ def randomTriviaTest():
     random_test = []
     for x in range(10):
         # Consulta aleatoria excluyendo las preguntas ya seleccionadas
-        question = db.session.query(QuestionsAnswers).filter(~QuestionsAnswers.id.in_(selected_question_ids)).order_by(func.random()).first()
+        question = (db.session.query(QuestionsAnswers)
+                    .outerjoin(Category)
+                    .options(joinedload(QuestionsAnswers.category))
+                    .filter(~QuestionsAnswers.id.in_(selected_question_ids))
+                    .order_by(func.random())
+                    .first()
+                )
 
         if question:
             selected_question_ids.add(question.id)
-            pregunta = question.question
-            random_test.append(pregunta) 
+            register = {
+                "id_pregunta" : question.id,
+                "pregunta" : question.question,
+                "ans1" : question.right_answer,
+                "ans2" : question.wrong_1,
+                "ans3" : question.wrong_2,
+                "category" : question.category.name, # Manejar con .join 
+            }
+            random_test.append(register) 
         else:
             print("No hay más preguntas disponibles en la base de datos.")
 
-    print("\nSe ha generado un test con las siguientes preguntas:")
-    for pregunta in random_test:
-        print("\t{}".format(pregunta))
+    # print("\nSe ha generado un test con las siguientes preguntas:")
+    # for pregunta in random_test:
+    #     print("\t{}".format(pregunta))
     
-    return random_test
+    return jsonify(random_test)
 
 
 # FUNCIÓN PARA GENERAR UN TEST BASADO EN SOLO ALGUNAS CATEGORÍAS
@@ -297,7 +312,7 @@ def categorizedTriviaTest(*category_ids: int):
     random_cat_test = categorized_questions[0:10]
 
     print("\nEnviamos nuestro test categorizado con 10 preguntas:\n", random_cat_test, len(random_cat_test))
-    return random_cat_test
+    return jsonify(random_cat_test)
 
 
 

@@ -23,6 +23,12 @@ class Category(db.Base):
     def __init__(self, name):
         self.name = name
 
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+        }
+
     def __str__(self):
         return "Creamos la categoria: {}".format(self.name)
 
