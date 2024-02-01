@@ -7,6 +7,31 @@ from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
 
+class User(db.Base):
+
+    #Argumentos que se guardarán como columnas de nuestra tabla
+    __tablename__ = "users"
+    __table_args__ = {"sqlite_autoincrement": True}
+    id = Column(Integer, primary_key=True)
+    username = Column(String, nullable=False)
+    email = Column(String, nullable=False)
+    password = Column(String, nullable=False)
+    score = Column(Integer) # Cada respuesta que el usuario contesta bien, suma 1
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+    def __init__(self, username, email, password, score=0):
+        self.username = username
+        self.email = email
+        self.password = password
+        self.score = score
+
+    def __str__(self):
+        return "Usuario creado: {}, {}".format(self.username, self.email)
+
+
+
 class Category(db.Base):
     
     # Argumentos que contendrá nuestra tabla

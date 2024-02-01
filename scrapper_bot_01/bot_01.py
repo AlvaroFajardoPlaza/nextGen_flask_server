@@ -30,7 +30,7 @@ URL = "https://youengage.me/blog/trivia-questions/"
 PATH_DRIVER = "/Applications/driver_sel/chromedriver-mac-arm64/chromedriver"                            
 CHROME_SERVICE = Service( executable_path = PATH_DRIVER )                                               
 options = Options()                                                                                     
-options.add_argument("--incognito") # Abre la ventana del webdriver en incógnito                        
+# options.add_argument("--incognito") # Abre la ventana del webdriver en incógnito                        
 # options.add_argument("--headless") # Ejecuta el scrapeo de la web sin abrir ventana del driver          
                                                                                                         
                                                                                                         

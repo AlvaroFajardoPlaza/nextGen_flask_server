@@ -13,7 +13,7 @@ __HOST = "localhost"
 # Mis datos de usuario para la bbdd: root, "", localhost, 3306
 #connection_string = "mysql://{}:{}@{}/database/scrapper_test.db".format(__USER, __PASSWORD, __HOST)
 
-connection_string = "sqlite:///database/scrapper_test_02.db"
+connection_string = "sqlite:///database/scrapper_test_01_02.db"
 sa_engine = create_engine(connection_string, echo=True) # la variable echo nos permite ver las requests a la BBDD
 
 # Creamos el objeto session que se encargará de las gestiones con la BBDD
