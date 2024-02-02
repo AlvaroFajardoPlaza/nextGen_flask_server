@@ -7,53 +7,49 @@ import db
 from db import sa_engine
 from models import User
 
-def register():
+def register_user():
+
+    print("\nEntramos en la funcion??????\n")
     if request.method == "POST":
-        username = request.form['username']
-        email = request.form['email']
-        password = request.form['password']
-
-        # Comprobar que el usuario no existe en la bbdd
-        existing_user = db.session.query(User).filter_by(email=email).first()
-        if existing_user:
-            return jsonify({'message': 'User already exists!'}), 400
-        
-        # Hasheamos contraseña
-        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-
-        # Creamos la instancia de usuario en la bbdd
-        new_user = User(username= username, email=email, password=hashed_password)
-        db.session.add(new_user)
         try:
+            # Para manejar las solicitudes de json en Flask
+            data = request.get_json()
+
+            username = data.get('username')
+            email = data.get('email')
+            password = data.get('password')
+
+            print("Los datos que hemos recibido son: ", username, email, password)
+
+            # Comprobar que el usuario no existe en la bbdd
+            existing_user = db.session.query(User).filter_by(email=email).first()
+            if existing_user:
+                print("\nYa existe un usuario registrado con este email\n")
+                return jsonify({'message': 'User already exists!'}), 400
+            
+            # Hasheamos contraseña
+            hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+
+            # Creamos la instancia de usuario en la bbdd
+            new_user = User(username= username, email=email, password=hashed_password)
+            db.session.add(new_user)
             db.session.commit()
             return jsonify({'message':'Successful register!'})
-
         
         except Exception as e:
             print(type(e).__name__)
             db.session.rollback()
-            return jsonify({'massage':'Register failed', 'error':str(e)})
+            return jsonify({'message': 'Register failed', 'error': str(e)}), 500
 
         finally:
+            print("Cerramos la session.")
             db.session.close()
     
 
 
 def user_login():
-    if request.method == "POST":
+    pass
         
-        username = request.form['username']
-        password = request.form['password']
-
-        # Buscamos al usuario en la bbdd
-        user = db.session.query(User).filter_by(username = username).first()
-
-        if user and check_password_hash(user.password, password):
-            # Usuario correcto, creamos la sesión
-            session['user_id'] = user.id
-            return jsonify({'message': 'Success'})
-        else:
-            return jsonify({'message': 'Invalid username or password'})
 
 
 def log_out():

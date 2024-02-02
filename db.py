@@ -1,4 +1,6 @@
 #### Dentro de este archivo configuramos la BBDD con SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
@@ -19,6 +21,11 @@ sa_engine = create_engine(connection_string, echo=True) # la variable echo nos p
 # Creamos el objeto session que se encargará de las gestiones con la BBDD
 Session = sessionmaker(bind = sa_engine)
 session = Session()
+
+
+# Creamos la instancia de SQLAlchemy
+db = SQLAlchemy()
+
 
 # Desde models.py creamos las clases que después transformaremos en tablas
 Base = declarative_base()
